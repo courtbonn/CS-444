@@ -13,12 +13,29 @@ _Bool SupportsRDRAND(){
 	return ((ecx & flag_RDRAND) == flag_RDRAND);
 }
 
+int init_rand(){
+	supports_rdrand = SupportsRDRAND();
+	if(!supports_rdrand){
+		init_genrand(time(NULL));
+	}
+}
+
 struct buffer_vals{
 	int num;
 	int rand_time;
+	//does this need to have a state for consumer/producer to check?
 };
 
+void producer(){
+	//create a new item and add it to the buffer unless full then wait for consumer
+}
+
+void consumer(){
+	//remove an item from buffer
+}
+
 int main(){
+   	init_rand();
 	return 0;
 }
 
