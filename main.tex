@@ -80,6 +80,31 @@ Seeing if changes are being pulled correctly
 	\item Work log. What was done when? Be detailed.
 \end{itemize}
 
+\section{Log}
+\begin{enumerate}
+\item cd /scratch/fall2017
+\item mkdir 39
+\item cd /scratch/fall2017/39
+\item git clone git://git.yoctoproject.org/linux-yocto-3.19
+\item cd linux-yocto-3.19
+\item git status - to confirm we are on tag v3.19.2
+\item cd ..
+\item source /scratch/files/environment-setup-i586-poky-linux.csh
+\item qemu-system-i386 -gdb tcp::5539 -S -nographic -kernel bzImage-qemux86.bin -drive file=core-image-lsb-sdk-qemux86.ext4,if=virtio -enable-kvm -net none -usb -localtime --no-reboot --append "root=/dev/vda rw console=ttyS0 debug"
+\item gdb (in new terminal tab)
+\item (gdb) target remote: 5539
+\item (gdb) c
+\item root (in VM)
+\item cp /scratch/files/config-3.19.2-yocto-qemu /scratch/fall2017/39/linux-yocto-3.19/.config
+\item make -j4 all
+\item qemu-system-i386 -gdb tcp::5539 -S -nographic -kernel linux-yocto-3.19/arch/x86/boot/bzImage -drive file=core-image-lsb-sdk-qemux86.ext4,if=virtio -enable-kvm -net none -usb -localtime --no-reboot --append "root=/dev/vda rw console=ttyS0 debug"
+\item gdb (in new terminal tab)
+\item (gdb) target remote: 5539
+\item (gdb) c
+\item root (in VM)
+
+
+\end{enumerate}
 %\section*{Appendix 1: Source Code}
 %\input{__mt19937ar.c.tex}
 
