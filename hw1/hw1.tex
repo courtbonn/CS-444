@@ -1,53 +1,44 @@
 \documentclass[letterpaper,10pt,draftclsnofoot,onecolumn,titlepage]{IEEEtran}
 
-\usepackage{graphicx}                                        
-\usepackage{amssymb}                                         
-\usepackage{amsmath}                                         
-\usepackage{amsthm}                                          
-
-\usepackage{alltt}                                           
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{alltt}
 \usepackage{float}
 \usepackage{color}
 \usepackage{url}
-
-\usepackage{balance}
-\usepackage[TABBOTCAP, tight]{subfigure}
 \usepackage{enumitem}
 \usepackage{pstricks, pst-node}
-
 \usepackage{geometry}
 
 \geometry{margin = .75in}
-\geometry{textheight=8.5in, textwidth=6in}
 
-%random comment
+\usepackage{hyperref}
 
-\newcommand{\cred}[1]{{\color{red}#1}}
-\newcommand{\cblue}[1]{{\color{blue}#1}}
-
-\newcommand{\toc}{\tableofcontents}
-
-%\usepackage{hyperref}
+\newcommand*{\signature}[1]{%
+	\par\noindent\makebox[3.5in]{\hrulefill} \hfill\makebox[3.0in]{\hrulefill}%
+	\par\noindent\makebox[3.5in][l]{#1}	    \hfill\makebox[3.0in][l]{Date}%
+}%
 
 \def\name{Courtney Bonn, Isaac Chan}
 \def\grp{Group \#39}
 
+\hypersetup{
+	colorlinks = true,
+	urlcolor = black,
+	pdfauthor = {\name},
+	pdftitle = {CS461 Problem Statement},
+	pdfsubject = {CS461 Problem Statement},
+	pdfpagemode = UseNone
+}
+
+
+
+
 %pull in the necessary preamble matter for pygments output
 %\input{pygments.tex}
 
-%% The following metadata will show up in the PDF properties
-% \hypersetup{
-%   colorlinks = false,
-%   urlcolor = black,
-%   pdfauthor = {\name},
-%   pdfkeywords = {cs311 ``operating systems'' files filesystem I/O},
-%   pdftitle = {CS 311 Project 1: UNIX File I/O},
-%   pdfsubject = {CS 311 Project 1},
-%   pdfpagemode = UseNone
-% }
-
-\parindent = 0.0 in
-\parskip = 0.1 in
 
 \begin{document}
 
