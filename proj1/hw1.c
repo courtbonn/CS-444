@@ -2,8 +2,19 @@
 #include <stdlib.h>
 #include "mt19937ar.c"
 #include <cpuid.h>
+#include <pthread.h>
 
 _Bool SupportsRDRAND; //true if supported, false if not supported
+pthread_t prod;
+pthread_t cons;
+
+//TODO: some type of queue structure for the event buffer
+
+struct buffer_vals{
+	int num;
+	int rand_time;
+	};
+
 
 //https://codereview.stackexchange.com/questions/147656/checking-if-cpu-supports-rdrand
 _Bool SupportsRDRAND(){
@@ -20,22 +31,32 @@ int init_rand(){
 	}
 }
 
-struct buffer_vals{
-	int num;
-	int rand_time;
-	//does this need to have a state for consumer/producer to check?
-};
-
-void producer(){
-	//create a new item and add it to the buffer unless full then wait for consumer
+void *producer(void *param){
+	//init a new event
+	//fill event (with random number (srand function in stdlib))
+	//see if the queue is full
+	//see if the queue is busy (waiting time)
+	//put the event into the buffer with random wait time
+	//increment the semaphore	
 }
 
-void consumer(){
+void *consumer(void *param){
 	//remove an item from buffer
+	//init a new event
+	//event = queue.head
+	//remove event from queue
+	//increment semaphore to free the space in the queue
+	//consume the event with the random wait time
 }
 
 int main(){
    	init_rand();
+
+	//http://timmurphy.org/2010/05/04/pthreads-in-c-a-minimal-working-example/
+	//placeholders
+	pthread_create(&prod, NULL, *producer, NULL);
+	pthread_create(&cons, NULL, *consumer, NULL);
+	
 	return 0;
 }
 
