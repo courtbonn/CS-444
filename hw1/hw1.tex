@@ -57,19 +57,6 @@ Abstract here.
 %input the pygmentized output of mt19937ar.c, using a (hopefully) unique name
 %this file only exists at compile time. Feel free to change that.
 
-\begin{itemize}
-
-	\item An explanation of each and every flag in the listed qemu command-line
-	\item Answer the following questions in sufficient detail (for the concurrency):
-    \begin{enumerate}  
-		\item What do you think the main point of this assignment is?
-		\item How did you personally approach the problem? Design decisions, algorithm, etc.
-		\item How did you ensure your solution was correct? Testing details, for instance.
-		\item What did you learn?
- 	\end{enumerate}
-	\item Version control log (formatted as a table) -- there are any number of tools for generating a TeX table from repo logs
-	\item Work log. What was done when? Be detailed.
-\end{itemize}
 
 \section{Log of Commands}
 \begin{enumerate}
@@ -93,9 +80,49 @@ Abstract here.
 \item (gdb) target remote: 5539
 \item (gdb) c
 \item root (in VM)
-
-
 \end{enumerate}
+
+\section{Explanation of Qemu Flags}
+\begin{itemize}
+\item -gdb \\
+	This enables the debug mode. 
+\item tcp::5539 \\
+	This specifies the port.  
+\item -S \\
+	This tells the CPU to not start right at startup. 
+\item -nographic \\
+	This disables graphics which makes qemu only display on the command line. 
+\item -kernel \\
+	This is where the kernel file location is defined. 
+\item -drive file=<> \\
+	This is where the file that will be used for the virtual disk is defined. 
+\item if=virtio
+\item -enable-kvm \\
+	This enables KVM virtualization and is the reason the VM boots so quickly. 
+\item -net none \\
+	This says there should be no network devices configured. 
+\item -usb \\
+	This enables the USB driver. 
+\item -localtime \\
+	Set the CPU at local time. 
+\item --no-reboot \\
+	Don't reboot qemu, just exit. 
+\item --append "root=/dev/vda rw console=ttyS0 debug" \\
+	This tells qemu to launch in debug mode.
+\end{itemize}
+
+\section{Concurrency Write Up}
+\begin{enumerate}  
+		\item What do you think the main point of this assignment is?
+		\item How did you personally approach the problem? Design decisions, algorithm, etc.
+		\item How did you ensure your solution was correct? Testing details, for instance.
+		\item What did you learn?
+ 	\end{enumerate}
+    
+\section{Version Control Log}
+
+\section{Work Log}
+
 %\section*{Appendix 1: Source Code}
 %\input{__mt19937ar.c.tex}
 
