@@ -83,6 +83,7 @@ Abstract here.
 \end{enumerate}
 
 \section{Explanation of Qemu Flags}
+To learn what the qemu flags represented, we researched the linux man page \cite{Qemu-kvm}.
 \begin{itemize}
 \item -gdb \\
 	This enables the debug mode. 
@@ -94,9 +95,8 @@ Abstract here.
 	This disables graphics which makes qemu only display on the command line. 
 \item -kernel \\
 	This is where the kernel file location is defined. 
-\item -drive file=<> \\
+\item -drive file=<>,if=virtio \\
 	This is where the file that will be used for the virtual disk is defined. 
-\item if=virtio
 \item -enable-kvm \\
 	This enables KVM virtualization and is the reason the VM boots so quickly. 
 \item -net none \\
@@ -122,8 +122,31 @@ Abstract here.
 \section{Version Control Log}
 
 \section{Work Log}
+\begin{center}
+\begin{tabular}{ c c c c }
+ Date  & Time & Person & Event \\ \hline
+ October 7, 2017 & 7:10pm & Courtney & Set up LaTex template \\  
+ 				 & 7:30pm & Courtney & Set up Git repository \\
+                 & 7:55pm & Courtney & Finished fixing issue with Github \\
+                 & 8:55pm & Courtney & Tried setting up Overleaf with Github, unable to figure it out right now \\
+                 & 9:01pm & Courtney & Tries running qemu command, gets error that says "qemu command not found" \\
+                 & 9:39pm & Courtney & Resourced configuration file, successfully runs qemu command \\
+                 & 9:42pm & Courtney & Opens new terminal and connects to gdb and remote port \\
+                 & 9:45pm & Courtney & Successfully boots VM in qemu \\
+                 & 10:09pm & Courtney & Booted VM using new kernel file \\
+                 & 10:13pm & Courtney & Began adding command log to write up\\
+                 & 11:00pm & Courtney & Added makefile and made sure it correctly build the tex file \\ \hline
+ October 8, 2017 & 1:00pm & Courtney & Fixed the folders on Github to pull from Overleaf correctly \\
+ 				 & 6:45pm & Courtney & Began researching the qemu flags and adding explanations to the tex file \\
+                 & 7:30pm & Courtney & Started compiling the work log \\
+                 
+\end{tabular}
+\end{center}
 
 %\section*{Appendix 1: Source Code}
 %\input{__mt19937ar.c.tex}
+
+\bibliographystyle{IEEEtran}
+	\bibliography{IEEEabrv,hw1bib}
 
 \end{document}
