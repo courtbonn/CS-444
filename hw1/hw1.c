@@ -117,11 +117,11 @@ int main(){
 
 	//http://timmurphy.org/2010/05/04/pthreads-in-c-a-minimal-working-example/
 	//placeholders
-	pthread_create(&prod, NULL, *producer, NULL);
-	pthread_create(&cons, NULL, *consumer, NULL);
+	pthread_create(&prod, NULL, producer, NULL);
+	pthread_create(&cons, NULL, consumer, NULL);
 
-	pthread_join(&prod,NULL);
-	pthread_join(&cons,NULL);
+	pthread_join(prod,NULL);
+	pthread_join(cons,NULL);
 
 	return 0;
 }
