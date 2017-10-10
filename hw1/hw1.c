@@ -61,8 +61,11 @@ int init_rand(){
 
 void *producer(void *param){
    	int num;
+	printf("inside producer");
+
    	while(1){
 		//init a new event
+		printf("inside while in producer");
 		struct buffer_vals *new_val;
 
 		//fill event (with random number (srand function in stdlib))
@@ -82,13 +85,20 @@ void *producer(void *param){
 		sleep(wait);
 		buffer[num] = *new_val;
 		printf("New event produced and added to buffer");
+		
+		pthread_mutex_unlock(&mutex);
+		sem_post(&busy);
+
 	}
+	pthread_exit(0);
 }
 
 void *consumer(void *param){
    	int num;
 	struct buffer_vals val;
+	printf("in consumer");
 	while(1){
+		printf("inside whil ein consumer"); 
 		//remove an item from buffer
 		sem_wait(&busy);
 		pthread_mutex_lock(&mutex);
@@ -105,23 +115,34 @@ void *consumer(void *param){
 		sleep(val.rand_time);
 		printf("Event consumed from buffer");
 	}
+	pthread_exit(0);
 }
 
 int main(){
    	srand((unsigned) time(&t));
    	init_rand();
 
+	printf("In main, after init_rand()\n");
+
 	pthread_mutex_init(&mutex, NULL);
 	sem_init(&busy, 0, 0);
 	sem_init(&full, 0, 32);
 
+	printf("IN main still, after pthread_mutex_init\n");
 	//http://timmurphy.org/2010/05/04/pthreads-in-c-a-minimal-working-example/
 	//placeholders
 	pthread_create(&prod, NULL, producer, NULL);
+	printf("created &prod");
+
 	pthread_create(&cons, NULL, consumer, NULL);
 
+	printf("created &cons");
+
 	pthread_join(prod,NULL);
+	printf("join prod");
+
 	pthread_join(cons,NULL);
+	printf("join cons");
 
 	return 0;
 }
