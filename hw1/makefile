@@ -15,6 +15,9 @@ pdf: $(PDF)
 
 ps: $(PSF)
 
+hw1: hw1.c
+	gcc hw1.c -pthread -lrt -o hw1
+
 $(TRG): %.dvi: %.tex $(EXAMPLES)
 	#one way of including source code is to use pygments
 	#pygmentize -f latex -o __${EXAMPLES}.tex ${EXAMPLES}

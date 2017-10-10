@@ -49,7 +49,7 @@
 \maketitle
 
 \begin{abstract}
-Abstract here.
+In the first assignment for the term, we are tasked with making sure our tools work for the term. First, we work through getting the kernel up and running on the os2 server, using the provided files. Once we were successful running the kernel, we build a new kernel and ensure that boots the VM as well. After we successfully built a new kernel, we moved on finding a solution to the producer-consumer problem.  
 \end{abstract}
 
 \clearpage
@@ -122,9 +122,12 @@ To learn what the qemu flags represented, we researched the linux man page \cite
 		\item How did you ensure your solution was correct? Testing details, for instance.
 		   There are three main tests for correct producer-consumer solution implementation.
 		   Producer and consumer don't alter the buffer at the same time.
-		   If the buffer is empty, the consumer won't consume an event until there exists an event.
-		   If the buffer is full, th
+		   The producer won't try to add an event if the buffer is full.
+		   The consumer won't try to consume an event if the buffer is empty.
+
+		   We tested our solution on the os server and outputted print statements on the state of the mutex. This demonstrated that it was unlocking and locking correctly so the producer and consumer weren't acting on the buffer at the same time. Then we were able to track the state of the buffer and saw that the consumer wasn't acting when it was empty and the producer wasn't acting when it was full.
 		\item What did you learn?
+		   We learned the basics of a kernel and running it in a VM. In the concurrency exercise, we learned a lot about semaphores and mutexes and working with p\_threads. We also learned how to embed ASM into C and got more practice debugging with GDB.
  	\end{enumerate}
     
 \section{Version Control Log}
@@ -133,32 +136,43 @@ To learn what the qemu flags represented, we researched the linux man page \cite
 \begin{center}
 \begin{tabular}{ c c c c }
  Date  & Time & Person & Event \\ \hline
+ October 5, 2017 & 4:00pm & Isaac & Set up shared directory \\
+                 & 4:30pm & Isaac & Run acl\_open script to share \\
+                 & 5:00pm & Isaac & Unsucessfully try to start the qemu VM \\
+                 & 5:30pm & Isaac & Sucessfully build the new kernel \\ \hline
  October 7, 2017 & 7:10pm & Courtney & Set up LaTex template \\  
- 				 & 7:30pm & Courtney & Set up Git repository \\
+ 		 & 7:30pm & Courtney & Set up Git repository \\
                  & 7:55pm & Courtney & Finished fixing issue with Github \\
-                 & 8:55pm & Courtney & Tried setting up Overleaf with Github, unable to figure it out right now \\
+                 & 8:30pm & Isaac & Start the concurrency assignment \\
+		 & 8:55pm & Courtney & Tried setting up Overleaf with Github, unable to figure it out right now \\
                  & 9:01pm & Courtney & Tries running qemu command, gets error that says "qemu command not found" \\
                  & 9:39pm & Courtney & Resourced configuration file, successfully runs qemu command \\
                  & 9:42pm & Courtney & Opens new terminal and connects to gdb and remote port \\
                  & 9:45pm & Courtney & Successfully boots VM in qemu \\
                  & 10:09pm & Courtney & Booted VM using new kernel file \\
                  & 10:13pm & Courtney & Began adding command log to write up\\
+		 & 10:30pm & Isaac & Set up assignment shell and add todo notes \\
                  & 11:00pm & Courtney & Added makefile and made sure it correctly build the tex file \\ \hline
  October 8, 2017 & 1:00pm & Courtney & Fixed the folders on Github to pull from Overleaf correctly \\
- 				 & 6:45pm & Courtney & Began researching the qemu flags and adding explanations to the tex file \\
+ 		 & 6:45pm & Courtney & Began researching the qemu flags and adding explanations to the tex file \\
                  & 7:30pm & Courtney & Started compiling the work log \\
-                 & 8:10pm & Courtney & Began reading 4.1 of Look Book of Semaphores \\ \hline
- October 5, 2017 & 4:00pm & Isaac & Set up shared directory \\
-   		 & 4:30pm & Isaac & Run acl_open script to share \\
-                 & 5:00pm & Isaac & Unsucessfully try to start the qemu VM \\
-   		 & 5:30pm & Isaac & Sucessfully build the new kernel \\ \hline
- October 7, 2017 & 8:30pm & Isaac & Start the concurrency assignment \\
-   		 & 10:30pm & Isaac & Set up assignment shell and add todo notes \\ \hline
- October 8, 2017 & 8:00pm & Isaac & Continue work on concurrency assignment
-   		 & 9:00pm & Isaac & Add random number generation \\
-   		 & 9:30pm & Isaac & Add threads and mutexes \\ \hline
- October 9, 2017 & 7:00pm & Isaac & Write the rest of the concurrency assignment \\
-   		 & 8:00pm & Isaac & First version done, but seg fault \\
+                 & 8:00pm & Isaac & Continue work on concurrency assignment \\
+		 & 8:10pm & Courtney & Began reading 4.1 of Look Book of Semaphores \\ 
+		 & 9:00pm & Isaac & Add random number generation \\
+                 & 9:30pm & Isaac & Add threads and mutexes \\ \hline
+ October 9, 2017 & 5:30pm & Courtney & Continued researching P-C problem to try and finish the code \\
+ 		 & 7:00pm & Isaac & Write the rest of the concurrency assignment \\
+	         & 8:00pm & Isaac & First version done, but seg fault \\ 
+		 & 8:00pm & Courtney & Began debugging Seg Fault error on Concurrency exercise \\
+                 & 8:31pm & Courtney & Fixed Seg fault; Program compiles with no errors or warnings and runs without a Seg fault, but doesn't ever finish executing \\
+                 & 10:00pm & Courtney & After debugging for an hour and half, finally found the line that was the source of the problem (sem\_getvalue) \\
+                 & 10:10pm & Courtney & Added counter to buffer and now code is entering the producer and consumer functions \\
+		 & 10:40pm & Courtney & Verified everything is working correctly \\
+		 & 10:50pm & Isaac & Began working on my work log and concurrency writeup\\
+		 & 11:00pm & Courtney & Finished up my work log and wrote abstract\\
+		 & 11:00pm & Isaac & Edited the makefile to include the C file\\
+		 & 11:13pm & Courtney & Added Github version control log\\ \hline
+		 
                  
                  
 \end{tabular}
