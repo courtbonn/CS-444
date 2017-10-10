@@ -11,6 +11,7 @@ pthread_t cons;
 sem_t full;
 sem_t busy;
 time_t t;
+int count;
 
 //blocks changes being made to buffer
 pthread_mutex_t busy_mutex;
@@ -61,30 +62,25 @@ int init_rand(){
 
 void *producer(void *param){
    	int num;
-	printf("inside producer");
 
    	while(1){
 		//init a new event
-		printf("inside while in producer");
 		struct buffer_vals *new_val;
 
 		//fill event (with random number (srand function in stdlib))
 		new_val = malloc(sizeof(struct buffer_vals));
 		new_val->num = gen_rand(0,5);
-		new_val->rand_time = gen_rand(2,9);	
-	
+		new_val->rand_time = gen_rand(2,9);
+
 		//see if the queue is full (update state and wait for state for state to change)
 		sem_wait(&full);
-
-		//see if the queue is busy (waiting time, update state?)
-		sem_getvalue(&busy, &num);
-
+		
 		//put the event into the buffer with random wait time (3-7)
 		pthread_mutex_lock(&mutex);
 		int wait = gen_rand(3, 7);
 		sleep(wait);
-		buffer[num] = *new_val;
-		printf("New event produced and added to buffer");
+		buffer[count++] = *new_val;
+		printf("New event produced and added to buffer with a value of %d\n", new_val->num);
 		
 		pthread_mutex_unlock(&mutex);
 		sem_post(&busy);
@@ -96,16 +92,13 @@ void *producer(void *param){
 void *consumer(void *param){
    	int num;
 	struct buffer_vals val;
-	printf("in consumer");
 	while(1){
-		printf("inside whil ein consumer"); 
 		//remove an item from buffer
 		sem_wait(&busy);
 		pthread_mutex_lock(&mutex);
 
 		//get event
-		sem_getvalue(&busy, &num);
-		val = buffer[num];
+		val = buffer[count--];
 
 		//increment semaphore to free the space in the queue
 		pthread_mutex_unlock(&mutex);
@@ -113,7 +106,8 @@ void *consumer(void *param){
 		
 		//consume the event with the random wait time
 		sleep(val.rand_time);
-		printf("Event consumed from buffer");
+		printf("The value %d has been consumed into the buffer\n", val.num);
+		
 	}
 	pthread_exit(0);
 }
@@ -122,27 +116,19 @@ int main(){
    	srand((unsigned) time(&t));
    	init_rand();
 
-	printf("In main, after init_rand()\n");
 
 	pthread_mutex_init(&mutex, NULL);
 	sem_init(&busy, 0, 0);
 	sem_init(&full, 0, 32);
+	
+	count = 0;
 
-	printf("IN main still, after pthread_mutex_init\n");
 	//http://timmurphy.org/2010/05/04/pthreads-in-c-a-minimal-working-example/
-	//placeholders
 	pthread_create(&prod, NULL, producer, NULL);
-	printf("created &prod");
-
 	pthread_create(&cons, NULL, consumer, NULL);
 
-	printf("created &cons");
-
 	pthread_join(prod,NULL);
-	printf("join prod");
-
 	pthread_join(cons,NULL);
-	printf("join cons");
 
 	return 0;
 }

@@ -120,6 +120,10 @@ To learn what the qemu flags represented, we researched the linux man page \cite
 		   The consumer algorithm was as follows: Check for empty buffer, lock mutex, consume buffer item, unlock mutex, increment the semaphore spaces.
 		   The producer algorithm was as follows: Check for full buffer, lock mutex, create item, add item to buffer, unlock mutex, increment the semaphore items. 
 		\item How did you ensure your solution was correct? Testing details, for instance.
+		   There are three main tests for correct producer-consumer solution implementation.
+		   Producer and consumer don't alter the buffer at the same time.
+		   If the buffer is empty, the consumer won't consume an event until there exists an event.
+		   If the buffer is full, th
 		\item What did you learn?
  	\end{enumerate}
     
