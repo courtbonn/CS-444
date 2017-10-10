@@ -114,7 +114,11 @@ To learn what the qemu flags represented, we researched the linux man page \cite
 \section{Concurrency Write Up}
 \begin{enumerate}  
 		\item What do you think the main point of this assignment is?
+		   The main point of the assignment is learn the basics of sharing a resource between multiple processes. The producer-consumer problem is a common problem in parallel processing.
 		\item How did you personally approach the problem? Design decisions, algorithm, etc.
+		   Essentially the problem is having multiple processes trying to write to one shared resource (the buffer). They can't alter the buffer at the same time so there must exist locks (mutexes) when the buffer is being used.
+		   The consumer algorithm was as follows: Check for empty buffer, lock mutex, consume buffer item, unlock mutex, increment the semaphore spaces.
+		   The producer algorithm was as follows: Check for full buffer, lock mutex, create item, add item to buffer, unlock mutex, increment the semaphore items. 
 		\item How did you ensure your solution was correct? Testing details, for instance.
 		\item What did you learn?
  	\end{enumerate}
@@ -139,7 +143,18 @@ To learn what the qemu flags represented, we researched the linux man page \cite
  October 8, 2017 & 1:00pm & Courtney & Fixed the folders on Github to pull from Overleaf correctly \\
  				 & 6:45pm & Courtney & Began researching the qemu flags and adding explanations to the tex file \\
                  & 7:30pm & Courtney & Started compiling the work log \\
-                 & 8:10pm & Courtney & Began reading 4.1 of Look Book of Semaphores \\
+                 & 8:10pm & Courtney & Began reading 4.1 of Look Book of Semaphores \\ \hline
+ October 5, 2017 & 4:00pm & Isaac & Set up shared directory \\
+   		 & 4:30pm & Isaac & Run acl_open script to share \\
+                 & 5:00pm & Isaac & Unsucessfully try to start the qemu VM \\
+   		 & 5:30pm & Isaac & Sucessfully build the new kernel \\ \hline
+ October 7, 2017 & 8:30pm & Isaac & Start the concurrency assignment \\
+   		 & 10:30pm & Isaac & Set up assignment shell and add todo notes \\ \hline
+ October 8, 2017 & 8:00pm & Isaac & Continue work on concurrency assignment
+   		 & 9:00pm & Isaac & Add random number generation \\
+   		 & 9:30pm & Isaac & Add threads and mutexes \\ \hline
+ October 9, 2017 & 7:00pm & Isaac & Write the rest of the concurrency assignment \\
+   		 & 8:00pm & Isaac & First version done, but seg fault \\
                  
                  
 \end{tabular}
