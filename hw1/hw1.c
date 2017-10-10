@@ -3,13 +3,14 @@
 #include "mt19937ar.c"
 #include <cpuid.h>
 #include <pthread.h>
+#include <semaphore.h>
+#include <time.h>
 
-_Bool SupportsRDRAND; //true if supported, false if not supported
 pthread_t prod;
 pthread_t cons;
-
-//init rand num gen
-srand((unsigned) time(&t));
+sem_t full;
+sem_t busy;
+time_t t;
 
 //blocks changes being made to buffer
 pthread_mutex_t busy_mutex;
@@ -38,7 +39,7 @@ _Bool SupportsRDRAND(){
 
 int gen_rand(int min, int max){
    	unsigned int value;
-	if(!supports_rdrand){
+	if(!SupportsRDRAND()){
 		value = (rand() % (max + 1 - min)) + min;
 	}
 	else{
@@ -53,43 +54,76 @@ int gen_rand(int min, int max){
 }
 
 int init_rand(){
-	supports_rdrand = SupportsRDRAND();
-	if(!supports_rdrand){
+	if(!SupportsRDRAND()){
 		init_genrand(time(NULL));
 	}
 }
 
 void *producer(void *param){
-	//init a new event
-	struct buffer_vals *new_val;
+   	int num;
+   	while(1){
+		//init a new event
+		struct buffer_vals *new_val;
 
-	//fill event (with random number (srand function in stdlib))
-	new_val = malloc(sizeof(struct buffer));
-	new_val->num = gen_rand(0,5);
-	new_val->rand_time = gen_rand(2,9);	
+		//fill event (with random number (srand function in stdlib))
+		new_val = malloc(sizeof(struct buffer_vals));
+		new_val->num = gen_rand(0,5);
+		new_val->rand_time = gen_rand(2,9);	
 	
-	//see if the queue is full (update state and wait for state for state to change)
-	
-	//see if the queue is busy (waiting time, update state?)
-	//put the event into the buffer with random wait time (3-7)
-	int wait = gen_rand(3, 7);
+		//see if the queue is full (update state and wait for state for state to change)
+		sem_wait(&full);
+
+		//see if the queue is busy (waiting time, update state?)
+		sem_getvalue(&busy, &num);
+
+		//put the event into the buffer with random wait time (3-7)
+		pthread_mutex_lock(&mutex);
+		int wait = gen_rand(3, 7);
+		sleep(wait);
+		buffer[num] = *new_val;
+		printf("New event produced and added to buffer");
+	}
 }
 
 void *consumer(void *param){
-	//remove an item from buffer
-	//init a new event
-	//event = queue.head
-	//remove event from queue
-	//increment semaphore to free the space in the queue
-	//consume the event with the random wait time
+   	int num;
+	struct buffer_vals val;
+	while(1){
+		//remove an item from buffer
+		sem_wait(&busy);
+		pthread_mutex_lock(&mutex);
+
+		//get event
+		sem_getvalue(&busy, &num);
+		val = buffer[num];
+
+		//increment semaphore to free the space in the queue
+		pthread_mutex_unlock(&mutex);
+		sem_post(&full);
+		
+		//consume the event with the random wait time
+		sleep(val.rand_time);
+		printf("Event consumed from buffer");
+	}
 }
 
 int main(){
+   	srand((unsigned) time(&t));
    	init_rand();
+
+	pthread_mutex_init(&mutex, NULL);
+	sem_init(&busy, 0, 0);
+	sem_init(&full, 0, 32);
 
 	//http://timmurphy.org/2010/05/04/pthreads-in-c-a-minimal-working-example/
 	//placeholders
 	pthread_create(&prod, NULL, *producer, NULL);
 	pthread_create(&cons, NULL, *consumer, NULL);
+
+	pthread_join(&prod,NULL);
+	pthread_join(&cons,NULL);
+
+	return 0;
 }
+
 
