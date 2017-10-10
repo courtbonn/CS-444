@@ -11,6 +11,7 @@ TRG	= $(SRC:%.tex=%.dvi)
 PSF	= $(SRC:%.tex=%.ps)
 PDF	= $(SRC:%.tex=%.pdf)
 
+
 pdf: $(PDF)
 
 ps: $(PSF)
@@ -43,7 +44,7 @@ show: $(TRG)
 showps: $(PSF)
 	@for i in $(PSF) ; do $(GH) $$i & done
 
-all: pdf
+all: pdf hw1
 
 clean:
 	rm -f  *.ps *.dvi *.out *.log *.aux *.bbl *.blg *.pyg
