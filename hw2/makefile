@@ -1,4 +1,4 @@
-TEX	= latex -shell-escape
+LATEX	= latex -shell-escape
 BIBTEX	= bibtex
 DVIPS	= dvips
 DVIPDF  = dvipdft
@@ -15,9 +15,6 @@ PDF	= $(SRC:%.tex=%.pdf)
 pdf: $(PDF)
 
 ps: $(PSF)
-
-#hw1: hw1.c
-#	gcc hw1.c -pthread -lrt -o hw1
 
 $(TRG): %.dvi: %.tex $(EXAMPLES)
 	#one way of including source code is to use pygments

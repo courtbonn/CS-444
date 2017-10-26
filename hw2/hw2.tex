@@ -1,4 +1,4 @@
-ss[letterpaper,10pt,draftclsnofoot,onecolumn,titlepage]{IEEEtran}
+\documentclass[letterpaper,10pt,draftclsnofoot,onecolumn,titlepage]{IEEEtran}
 
 \usepackage{graphicx}
 \usepackage{amssymb}
@@ -17,10 +17,6 @@ ss[letterpaper,10pt,draftclsnofoot,onecolumn,titlepage]{IEEEtran}
 
 \usepackage{hyperref}
 
-\newcommand*{\signature}[1]{%
-	\par\noindent\makebox[3.5in]{\hrulefill} \hfill\makebox[3.0in]{\hrulefill}%
-	\par\noindent\makebox[3.5in][l]{#1}	    \hfill\makebox[3.0in][l]{Date}%
-}%
 
 \def\name{Courtney Bonn, Isaac Chan}
 \def\grp{Group \#39}
@@ -29,17 +25,10 @@ ss[letterpaper,10pt,draftclsnofoot,onecolumn,titlepage]{IEEEtran}
 	colorlinks = true,
 	urlcolor = black,
 	pdfauthor = {\name},
-	pdftitle = {CS461 Problem Statement},
-	pdfsubject = {CS461 Problem Statement},
+	pdftitle = {CS 444, Project 2},
+	pdfsubject = {CS 444, Project 2},
 	pdfpagemode = UseNone
 }
-
-
-
-
-%pull in the necessary preamble matter for pygments output
-%\input{pygments.tex}
-
 
 \begin{document}
 
@@ -49,18 +38,14 @@ ss[letterpaper,10pt,draftclsnofoot,onecolumn,titlepage]{IEEEtran}
 \maketitle
 
 \begin{abstract}
+Abstract here.
 \end{abstract}
 
 \clearpage
-
-%input the pygmentized output of mt19937ar.c, using a (hopefully) unique name
-%this file only exists at compile time. Feel free to change that.
-
-
 \section{Design Choice}
     
 \section{Version Control Log}
-\input{changelog.tex}
+%\input{changelog.tex}
 
 \section{Work Log}
 \begin{center}
@@ -79,10 +64,6 @@ ss[letterpaper,10pt,draftclsnofoot,onecolumn,titlepage]{IEEEtran}
                 \item How should the TA evaluate your work? Provide detailed steps to prove correctness 
 \end{enumerate}
 
-%\section*{Appendix 1: Source Code}
-%\input{__mt19937ar.c.tex}
 
-%\bibliographystyle{IEEEtran}
-%	\bibliography{IEEEabrv,hw2bib}
 
 \end{document}
