@@ -5,6 +5,7 @@
 #include <pthread.h>
 #include <semaphore.h>
 #include <time.h> 
+#include <string.h>
 
 pthread_t philosopher[5];
 pthread_mutex_t forks[5]; 
@@ -42,26 +43,50 @@ int init_rand()
 	}
 }
 
+void name(char s[]){
+	if(strcmp(s,"Philosopher #1") == 0){
+		printf("Plato");
+	}
+	else if(strcmp(s,"Philosopher #2") == 0){
+	   	printf("Aristotle");
+	}
+	else if(strcmp(s,"Philosopher #3") == 0){
+	   	printf("Descartes");
+	}
+	else if(strcmp(s,"Philosopher #4") == 0){
+	   	printf("Kant");
+	}
+	else if(strcmp(s,"Philosopher #5") == 0){
+	   	printf("Socrates");
+	}
+}
+
 void *philos(int i) 
 {
 	int think = gen_rand(1,20);
 	int eat = gen_rand(2,9);
-
-	printf("Philosopher #%d is currently thinking.\n", i); 
+	
+	char buffer[24];
+	sprintf(buffer, "Philosopher #%d", i);
+	
+	name(buffer);
+	printf(" is currently thinking.\n");
 	sleep(think); 
-
+	
 	//get_forks()
 	pthread_mutex_lock(&forks[i]); // pick up left fork
 	pthread_mutex_lock(&forks[(i + 1) % 5]); // pick up right fork
 
-	printf("Philosopher #%d is currently eating.\n", i);
+	name(buffer);
+	printf(" is currently eating.\n");
 	sleep(eat);
 
 	//put_forks(); 
 	pthread_mutex_unlock(&forks[i]); //put down left fork
 	pthread_mutex_unlock(&forks[(i + 1) % 5]); // put down right fork
 	
-	printf("Philosopher #%d is done eating.\n", i);
+	name(buffer);
+	printf(" is done eating.\n");
 
 }
 
