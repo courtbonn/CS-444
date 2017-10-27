@@ -47,6 +47,14 @@ There are two commands that will compile our concurrency file.
 	\item gcc dining.c -pthread -lrt -o dining
 \end{enumerate}
 
-After the file is compiled, ./dining will run the program. 
+After the file is compiled, ./dining will run the program. The program will start and the philosophers will think and eat.
+They will do this endlessly until the user interrupts the program. \\
+
+\noindent We verified the correctness of the program by first printing the numbers of the philosophers instead of their names. This ensured that
+we could manually check that there was no overlap of forks being used. Since there was no overlap, it meant that the fork mutexes were 
+working correctly. We were also able to see that multiple philosophers were able to eat concurrently, as long as the forks they used were separate.\\
+
+\noindent By having the program run endlessly, it shows that there is no deadlock occuring, when philosophers are trapped in an eat or think cycle with
+no end, and not getting stuck and starving some philosophers. It also demonstrates that no philosophers were randomly dying through the program runtime. \\
 
 \end{document}
