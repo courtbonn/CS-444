@@ -1,0 +1,52 @@
+\documentclass[letterpaper,10pt,draftclsnofoot,onecolumn,titlepage]{IEEEtran}
+
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{alltt}
+\usepackage{float}
+\usepackage{color}
+\usepackage{url}
+\usepackage{enumitem}
+%\usepackage{pstricks, pst-node}
+\usepackage{geometry}
+\usepackage{bookmark}
+
+\geometry{margin = .75in}
+
+\usepackage{hyperref}
+
+
+\def\name{Courtney Bonn, Isaac Chan}
+\def\grp{Group \#39}
+
+\hypersetup{
+	colorlinks = true,
+	urlcolor = black,
+	pdfauthor = {\name},
+	pdftitle = {CS 444, Concurrency 2},
+	pdfsubject = {CS 444, Concurrency 2},
+	pdfpagemode = UseNone
+}
+
+\begin{document}
+
+\title{Concurrency 2: The Dining Philosophers Problem}
+\author{\name \\ \grp}
+
+\maketitle
+
+
+\section{ How should the TA evaluate your work? Provide detailed steps to prove correctness} 
+
+There are two commands that will compile our concurrency file. 
+
+\begin{enumerate}
+	\item make con2
+	\item gcc dining.c -pthread -lrt -o dining
+\end{enumerate}
+
+After the file is compiled, ./dining will run the program. 
+
+\end{document}
