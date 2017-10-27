@@ -104,18 +104,21 @@ int main()
 	init_rand();
 	
 	int i;
+	while(1){
+		for(i = 1; i <= 5; i++) {
+		   	sleep(1);
+			pthread_mutex_init(&forks[i], NULL);
+		}
 
-	for(i = 1; i <= 5; i++) {
-		pthread_mutex_init(&forks[i], NULL);
+		for(i = 1; i <= 5; i++) {
+		   	sleep(1);
+			pthread_create(&philosopher[i], NULL,(void *) philos,(int *) i);
+		}
+
+		for(i = 1; i <= 5; i++) {
+		   	sleep(1);
+			pthread_join(philosopher[i],NULL);
+		}	
 	}
-
-	for(i = 1; i <= 5; i++) {
-		pthread_create(&philosopher[i], NULL,(void *) philos,(int *) i);
-	}
-
-	for(i = 1; i <= 5; i++) {
-		pthread_join(philosopher[i],NULL);
-	}
-
 	return 0;
 }
