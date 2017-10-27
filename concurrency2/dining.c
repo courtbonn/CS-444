@@ -76,6 +76,9 @@ void *philos(int i)
 	//get_forks()
 	pthread_mutex_lock(&forks[i]); // pick up left fork
 	pthread_mutex_lock(&forks[(i + 1) % 5]); // pick up right fork
+	printf("Forks around ");
+	name(buffer);
+	printf(" are being used.\n");
 
 	name(buffer);
 	printf(" is currently eating.\n");
@@ -84,7 +87,10 @@ void *philos(int i)
 	//put_forks(); 
 	pthread_mutex_unlock(&forks[i]); //put down left fork
 	pthread_mutex_unlock(&forks[(i + 1) % 5]); // put down right fork
-	
+	printf("Forks around ");
+	name(buffer);
+	printf(" have just been set down.\n");
+
 	name(buffer);
 	printf(" is done eating.\n");
 
