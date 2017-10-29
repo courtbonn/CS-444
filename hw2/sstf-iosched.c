@@ -1,5 +1,8 @@
 /*
  * elevator look
+ * Changes made to noop-iosched.c to reflect LOOK Algorithm 
+ * by Courtney Bonn & Isaac Chan
+ * CS 444 Fall 2017
  */
 #include <linux/blkdev.h>
 #include <linux/elevator.h>
