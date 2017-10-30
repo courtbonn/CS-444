@@ -19,6 +19,7 @@ static void clook_merged_requests(struct request_queue *q, struct request *rq,
 				 struct request *next)
 {
 	list_del_init(&next->queuelist);
+	printk("CLOOK merge\n");
 }
 
 static int clook_dispatch(struct request_queue *q, int force)
@@ -67,6 +68,7 @@ static struct request *
 clook_former_request(struct request_queue *q, struct request *rq)
 {
 	struct clook_data *nd = q->elevator->elevator_data;
+	printk("CLOOK former req\n");
 
 	if (rq->queuelist.prev == &nd->queue)
 		return NULL;
@@ -77,6 +79,7 @@ static struct request *
 clook_latter_request(struct request_queue *q, struct request *rq)
 {
 	struct clook_data *nd = q->elevator->elevator_data;
+	printk("CLOOK latter req\n");
 
 	if (rq->queuelist.next == &nd->queue)
 		return NULL;
@@ -104,6 +107,8 @@ static int clook_init_queue(struct request_queue *q, struct elevator_type *e)
 	spin_lock_irq(q->queue_lock);
 	q->elevator = eq;
 	spin_unlock_irq(q->queue_lock);
+
+	printk("CLOOK init queue\n");
 	return 0;
 }
 
@@ -113,6 +118,8 @@ static void clook_exit_queue(struct elevator_queue *e)
 
 	BUG_ON(!list_empty(&nd->queue));
 	kfree(nd);
+
+	printk("CLOOK exit queue\n");
 }
 
 static struct elevator_type elevator_clook = {
