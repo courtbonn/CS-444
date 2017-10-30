@@ -1,6 +1,6 @@
 /*
- * elevator look
- * Changes made to noop-iosched.c to reflect LOOK Algorithm 
+ * elevator clook
+ * Changes made to noop-iosched.c to reflect CLOOK Algorithm 
  * by Courtney Bonn & Isaac Chan
  * CS 444 Fall 2017
  */
@@ -11,41 +11,62 @@
 #include <linux/slab.h>
 #include <linux/init.h>
 
-struct look_data {
+struct clook_data {
 	struct list_head queue;
 };
 
-static void look_merged_requests(struct request_queue *q, struct request *rq,
+static void clook_merged_requests(struct request_queue *q, struct request *rq,
 				 struct request *next)
 {
 	list_del_init(&next->queuelist);
 }
 
-static int look_dispatch(struct request_queue *q, int force)
+static int clook_dispatch(struct request_queue *q, int force)
 {
-	struct look_data *nd = q->elevator->elevator_data;
+	struct clook_data *nd = q->elevator->elevator_data;
+	char rw;
+	struct request *rq;
 
 	if (!list_empty(&nd->queue)) {
-		struct request *rq;
+		//struct request *rq;
 		rq = list_entry(nd->queue.next, struct request, queuelist);
 		list_del_init(&rq->queuelist);
 		elv_dispatch_sort(q, rq);
+
+		if(rq_data_dir(rq) == 0)
+			rw = 'R';
+		else
+		   	rw = 'W';
+		printk("CLOOK dispatch %c at %lx\n", rw, blk_rq_pos(rw));
+
 		return 1;
 	}
 	return 0;
 }
 
-static void look_add_request(struct request_queue *q, struct request *rq)
+//check the sector pos with rq_end_sector
+static void clook_add_request(struct request_queue *q, struct request *rq)
 {
-	struct look_data *nd = q->elevator->elevator_data;
+	struct clook_data *nd = q->elevator->elevator_data;
+	struct list_head *h = NULL;
 
-	list_add_tail(&rq->queuelist, &nd->queue);
+	list_for_each(h, &nd->queue){
+		//just check if the request is bigger than the sector position, break
+		if(rq_end_sector(rq) < rq_end_sector(list_entry(h, struct request, queuelist)))
+		   	break;
+	}
+
+	//list_add_tail(&rq->queuelist, &nd->queue);
+	
+	//add after current sector position
+	list_add_tail(&rq->queuelist, h);
+	printk("CLOOK add %lx\n", blk_rq_pos(rq));
 }
 
 static struct request *
-look_former_request(struct request_queue *q, struct request *rq)
+clook_former_request(struct request_queue *q, struct request *rq)
 {
-	struct look_data *nd = q->elevator->elevator_data;
+	struct clook_data *nd = q->elevator->elevator_data;
 
 	if (rq->queuelist.prev == &nd->queue)
 		return NULL;
@@ -53,18 +74,18 @@ look_former_request(struct request_queue *q, struct request *rq)
 }
 
 static struct request *
-look_latter_request(struct request_queue *q, struct request *rq)
+clook_latter_request(struct request_queue *q, struct request *rq)
 {
-	struct look_data *nd = q->elevator->elevator_data;
+	struct clook_data *nd = q->elevator->elevator_data;
 
 	if (rq->queuelist.next == &nd->queue)
 		return NULL;
 	return list_entry(rq->queuelist.next, struct request, queuelist);
 }
 
-static int look_init_queue(struct request_queue *q, struct elevator_type *e)
+static int clook_init_queue(struct request_queue *q, struct elevator_type *e)
 {
-	struct look_data *nd;
+	struct clook_data *nd;
 	struct elevator_queue *eq;
 
 	eq = elevator_alloc(q, e);
@@ -86,42 +107,42 @@ static int look_init_queue(struct request_queue *q, struct elevator_type *e)
 	return 0;
 }
 
-static void look_exit_queue(struct elevator_queue *e)
+static void clook_exit_queue(struct elevator_queue *e)
 {
-	struct look_data *nd = e->elevator_data;
+	struct clook_data *nd = e->elevator_data;
 
 	BUG_ON(!list_empty(&nd->queue));
 	kfree(nd);
 }
 
-static struct elevator_type elevator_look = {
+static struct elevator_type elevator_clook = {
 	.ops = {
-		.elevator_merge_req_fn		= look_merged_requests,
-		.elevator_dispatch_fn		= look_dispatch,
-		.elevator_add_req_fn		= look_add_request,
-		.elevator_former_req_fn		= look_former_request,
-		.elevator_latter_req_fn		= look_latter_request,
-		.elevator_init_fn		= look_init_queue,
-		.elevator_exit_fn		= look_exit_queue,
+		.elevator_merge_req_fn		= clook_merged_requests,
+		.elevator_dispatch_fn		= clook_dispatch,
+		.elevator_add_req_fn		= clook_add_request,
+		.elevator_former_req_fn		= clook_former_request,
+		.elevator_latter_req_fn		= clook_latter_request,
+		.elevator_init_fn		= clook_init_queue,
+		.elevator_exit_fn		= clook_exit_queue,
 	},
-	.elevator_name = "look",
+	.elevator_name = "clook",
 	.elevator_owner = THIS_MODULE,
 };
 
-static int __init look_init(void)
+static int __init clook_init(void)
 {
-	return elv_register(&elevator_look);
+	return elv_register(&elevator_clook);
 }
 
-static void __exit look_exit(void)
+static void __exit clook_exit(void)
 {
-	elv_unregister(&elevator_look);
+	elv_unregister(&elevator_clook);
 }
 
-module_init(look_init);
-module_exit(look_exit);
+module_init(clook_init);
+module_exit(clook_exit);
 
 
-MODULE_AUTHOR("Jens Axboe");
+MODULE_AUTHOR("Isaac Chan & Courtney Bonn");
 MODULE_LICENSE("GPL");
-MODULE_DESCRIPTION("No-op IO scheduler");
+MODULE_DESCRIPTION("CLOOK IO scheduler");
