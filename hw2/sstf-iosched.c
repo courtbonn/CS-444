@@ -33,11 +33,11 @@ static int clook_dispatch(struct request_queue *q, int force)
 		rq = list_entry(nd->queue.next, struct request, queuelist);
 		list_del_init(&rq->queuelist);
 		elv_dispatch_sort(q, rq);
-
-		if(rq_data_dir(rq) == 0)
-			rw = 'R';
+			
+		if(rq_data_dir(rq) == REQ_WRITE)
+			rw = 'W';
 		else
-		   	rw = 'W';
+		   	rw = 'R';
 		printk("CLOOK dispatch %c at %lx\n", rw, blk_rq_pos(rw));
 
 		return 1;
@@ -50,13 +50,15 @@ static void clook_add_request(struct request_queue *q, struct request *rq)
 {
 	struct clook_data *nd = q->elevator->elevator_data;
 	struct list_head *h = NULL;
-
-	list_for_each(h, &nd->queue){
-		//just check if the request is bigger than the sector position, break
-		if(rq_end_sector(rq) < rq_end_sector(list_entry(h, struct request, queuelist)))
-		   	break;
+	if(!list_empty(&nd->queue){
+		list_for_each(h, &nd->queue){
+			//just check if the request is bigger than the sector position, break
+			if(rq_end_sector(rq) < rq_end_sector(list_entry(h, struct request, queuelist)))
+		   		break;
+		}	
 	}
-
+	else
+		list_add_tail(&rq->queuelist, &nd->queue);
 	//list_add_tail(&rq->queuelist, &nd->queue);
 	
 	//add after current sector position
