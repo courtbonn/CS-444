@@ -73,7 +73,8 @@ October 30, 2017 & 12:30am & Isaac & Complete initial CLOOK implementation \\
    		 & 2:20am & Courtney & Design a plan to test the new scheduler \\
 		 & 3:45am & Courtney & Still working on how to test scheduler \\
 		 & 4:47am & Courtney and Isaac & Trying to figure out why CLOOK scheduler isn't printing/working, not having much success \\
-		 & 5:30pm & Courtney and Isaac & Working through Kernel Panic, trying to determine where the error is \\ 
+		 & 5:30pm & Courtney and Isaac & Working through Kernel Panic, trying to determine where the error is \\
+   		 & 7:30pm & Courtney and Isaac & Wrapping up assignment with final commits and documenting test plan \\
 \end{tabular}
 \end{center}
 
@@ -93,10 +94,29 @@ be sorted to the correct spot in the queue.
 
 To implement our selected algorithm, we made use of the Kernel's Linked List implementation. 
                 \item How did you ensure your solution was correct? Testing details, for instance.
-
 Our plan for testing was to run a python script that created a file and wrote to it. 
+This triggers file/IO steps that we can then check the system log for clook printouts. 
+However, because we were unsuccessful at getting the kernel to boot with our new I/O scheduler, we were unable to fully test the solution. 
+Once the CLOOK algorithm was written, we were able to select it as the default scheduler when building the kernel and the kernel was able to compile.
+We made the necessary adjustments to the qemu command by disabling virtio and changing \textit{root=/dev/vda} to \textit{root=/dev/hda}; however, when the qemu command was ran, there was a kernel panic. 
+We attempted for several hours to adjust our algorithm in order to avoid a kernel panic, but we were unable to determine the root of the problem. 
+We believe the problem was with our add request function, as that ended up being the only one we modified. 
+During the kernel boot, you can see "CLOOK add 2" which indicates that an add does occur, but immediately after an error occurs stating \textit{BUG: unable to handle kernel NULL pointer dereference at 0000008a}. 
+We are not 100 percent sure that this is the issue with the kernel panic, but we believe it may be attributed to it. 
+
                 \item What did you learn?
+We learned about implementing an elevator algorithm and also with configuring a Linux kernel. We were able to change qemu flags to fit our needs.
+Even though we were not able to successfully apply our new scheduler and were unable to determine its correctness, we were able to learn quite a lot with regards to the Linux kernel. 
+
                 \item How should the TA evaluate your work? Provide detailed steps to prove correctness 
+			\begin{itemize}
+			\item Apply kernel patch file and build the kernel with \textit{make -j4 all}.
+			\item The build should ask you what scheduler to use; select CLOOK as the default.
+			\item Source the environment script.
+			\item Launch qemu with \textit{qemu-system-i386 -gdb tcp::5539 -S -nographic -kernel ./linux-yocto-3.19/arch/x86/boot/bzImage -drive file=core-image-lsb-sdk-qemux86.ext4,if=ide -enable-kvm -usb -localtime --no-reboot --append "root=/dev/hda rw console=ttyS0 debug"}
+			\item Connect to qemu with gdb \textit{target remote:5539} and \textit{continue}
+			\item There will be many CLOOK messages as the kernel boots.
+			\end{itemize}
 \end{enumerate}
 
 
