@@ -42,7 +42,6 @@ For the second kernel assignment, we are tasked with building a new I/O Schedule
 The algorithm that will be used for the new I/O Scheduler is CLOOK. 
 \end{abstract}
 
-\clearpage
 \section{Design Plan}
 The algorithm we chose to implement is CLOOK. After examining the NOOP scheduler, we came to the conclusion that the only two methods to be altered 
 are the dispatch and add\_request methods. The dispatch requires an addition to tell if the request is for reading or writing. The add\_request method 
@@ -85,7 +84,13 @@ queue. This can be done by: check the sector position while iterating and then i
 \href{https://github.com/courtbonn/CS-444/commit/193653232e83d3b72dab544abc48d95c78bb2e2c}{1936532} & Courtney Bonn & added correct linux patch\\\hline
 \href{https://github.com/courtbonn/CS-444/commit/c7e3b36a90dc324a0bd24af5bbebe27b8f2cd352}{c7e3b36} & Courtney Bonn & removed linux patch\\\hline
 \href{https://github.com/courtbonn/CS-444/commit/119116a604998aba96ad0479b6309bbd25d10019}{119116a} & Isaac Chan & rename noop file in unchanged\\\hline
-\href{https://github.com/courtbonn/CS-444/commit/ba5aeb22ab9d21ca25fc05605a65288d43e52762}{ba5aeb2} & Isaac Chan & remove unchanged block\\\hline\end{tabular}
+\href{https://github.com/courtbonn/CS-444/commit/ba5aeb22ab9d21ca25fc05605a65288d43e52762}{ba5aeb2} & Isaac Chan & remove unchanged block\\\hline
+\href{https://github.com/courtbonn/CS-444/commit/a6487f178233ac6144fa2a78a63e717e829cbdce}{a6487f1} & Isaac Chan & add unchanged block\\\hline
+\href{https://github.com/courtbonn/CS-444/commit/8eefec7e7192a315187096ef6310651fd8d7ed21}{8eefec7} & Courtney Bonn & added gitlog\\\hline
+\href{https://github.com/courtbonn/CS-444/commit/8d5f85d6b91eb9041debcfe5b93c4224f5cdfee6}{8d5f85d} & Courtney Bonn & fixed gitlog table\\\hline
+\href{https://github.com/courtbonn/CS-444/commit/8137957ba4bd705a41ce04a7f5c05180a4d28728}{8137957} & Courtney Bonn & deleted file\\\hline
+\href{https://github.com/courtbonn/CS-444/commit/07edb5461a1b433e43a0e1c4a9a4ba0cd2e9a126}{07edb54} & Courtney Bonn & Added final patch\\\hline\end{tabular}
+
 \section{Work Log}
 \begin{center}
 \begin{tabular}{p{3cm}p{1cm}p{1cm}p{10cm} }
@@ -109,6 +114,7 @@ October 30, 2017 & 12:30am & Isaac & Complete initial CLOOK implementation \\
 		 & 4:47am & Courtney and Isaac & Trying to figure out why CLOOK scheduler isn't printing/working, not having much success \\
 		 & 5:30pm & Courtney and Isaac & Working through Kernel Panic, trying to determine where the error is \\
    		 & 7:30pm & Courtney and Isaac & Wrapping up assignment with final commits and documenting test plan \\
+		 & 9:30pm & Courtney and Isaac & Working on kernel patch \\
 \end{tabular}
 \end{center}
 
