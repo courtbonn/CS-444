@@ -21,7 +21,6 @@ static void clook_merged_requests(struct request_queue *q, struct request *rq,
 				 struct request *next)
 {
 	list_del_init(&next->queuelist);
-	elv_dispatch_sort(q, next);
 	printk("CLOOK merge\n");
 }
 
