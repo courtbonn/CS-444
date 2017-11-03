@@ -41,7 +41,42 @@
 \end{abstract}
 
 \section{Design Plan}
-    
+Our plan for project 3 is to first get a basic ramdisk block driver up and running on the VM before we begin any encryption. 
+We first read through the chapter on block drivers in \href{https://lwn.net/Kernel/LDD3/}{Linux Device Drivers} which provided a simple block driver called \textit{sbull}. 
+Because this driver was based off an older version of the Linux Kernel, we did a bit more research for ramdisk drivers that might be more recent. 
+
+This research led us to a comment on the book which led to a more recent version of the ramdisk driver. 
+In a post by \href{http://blog.superpat.com/2010/05/04/a-simple-block-driver-for-linux-kernel-2-6-31/comment-page-2/#comment-148884}{Pat Patterson}, we found the ramdisk driver that would work with kernel 2.6.31. 
+Because we are using kernel 3.19, we still weren't sure if this would work. 
+In the comments of the post, which can be found at \url{http://blog.superpat.com/2010/05/04/a-simple-block-driver-for-linux-kernel-2-6-31/comment-page-2/#comment-148884}, there was a recent comment by \href{http://blog.superpat.com/2010/05/04/a-simple-block-driver-for-linux-kernel-2-6-31/comment-page-2/#comment-148884}{Sarge} that updated one line of the code to make it work for kernels 3.15 and later.  
+
+With this base code, we were able to compile the kernel and boot the VM. 
+Once in the VM, we were able to run a series of commands that loaded the ramdisk module, made a filesystem, mount the module, and then unmount and remove the module. The commands were:
+
+	\begin{enumerate}
+		\item scp \(ONID Username\)@os2.engr.oregonstate.edu:/scratch/fall2017/39/linux-ramdisk/drivers/block/ramd.ko .
+		\item insmod ramd.ko
+		\item fdisk /dev/sbd0
+
+		\item Command: n
+		\item Partition type: p
+		\item Partition number: 1
+		\item First sector: \[press enter for default value\]
+		\item Last sector: \[press enter for default value\]
+
+		\item Command: w
+
+		\item mkfs /dev/sbd0p1
+		\item mount /dev/sbd0p1 /mnt
+		\item echo Hi > /mnt/file1
+		\item cat /mnt/file1
+		\item ls -l /mnt (just to view the file was created)
+		\item umount /mnt
+		\item rmmod ramd.ko 
+	\end{enumerate}
+
+Now that we were able to successfully run an unencrypted ramdisk, our next step was to begin the encryption section. 
+
 \section{Version Control Log}
 
 \section{Work Log}
@@ -51,6 +86,8 @@
 November 1, 2017 & 9:20am & Courtney & Started HW3 LaTeX file \\
 November 2, 2017 & 7:15pm & Courtney and Isaac & Begin researching Ram Disks \\
 		 & 8:30pm & Courtney & Set up basic block driver \\
+		 & 9:30pm & Isaac & Building and compiling ramd.c \\
+November 3, 2017 & 9:00am & Courtney & Successfully boot VM and loaded the Ramd.c module, made the filesystem, mounted it, verified it worked, unmounted and removed module \\
 \end{tabular}
 \end{center}
 
