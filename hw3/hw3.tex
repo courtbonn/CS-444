@@ -54,21 +54,21 @@ With this base code, we were able to compile the kernel and boot the VM.
 Once in the VM, we were able to run a series of commands that loaded the ramdisk module, made a filesystem, mount the module, and then unmount and remove the module. The commands were:
 
 	\begin{enumerate}
-		\item scp \(ONID Username\)@os2.engr.oregonstate.edu:/scratch/fall2017/39/linux-ramdisk/drivers/block/ramd.ko .
+		\item scp (ONID Username)@os2.engr.oregonstate.edu:/scratch/fall2017/39/linux-ramdisk/drivers/block/ramd.ko .
 		\item insmod ramd.ko
 		\item fdisk /dev/sbd0
 
 		\item Command: n
 		\item Partition type: p
 		\item Partition number: 1
-		\item First sector: \[press enter for default value\]
-		\item Last sector: \[press enter for default value\]
+		\item First sector: [press enter for default value]
+		\item Last sector: [press enter for default value]
 
 		\item Command: w
 
 		\item mkfs /dev/sbd0p1
 		\item mount /dev/sbd0p1 /mnt
-		\item echo Hi > /mnt/file1
+		\item echo Hi \textgreater /mnt/file1
 		\item cat /mnt/file1
 		\item ls -l /mnt (just to view the file was created)
 		\item umount /mnt
