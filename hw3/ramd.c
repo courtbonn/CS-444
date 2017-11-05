@@ -23,6 +23,7 @@
 #include <linux/genhd.h>
 #include <linux/blkdev.h>
 #include <linux/hdreg.h>
+#include <linux/crypto.h>
 
 MODULE_LICENSE("Dual BSD/GPL");
 static char *Version = "1.4";
@@ -34,6 +35,11 @@ module_param(logical_block_size, int, 0);
 static int nsectors = 1024; /* How big the drive is */
 module_param(nsectors, int, 0);
 
+static int keylength = 32;
+static char *crypto_key = "ThisIsTheDefaultCryptoKey";
+module_param(crypto_key, charp, S_IRUGO | S_IWUSR);
+
+struct crypto_cipher *tfm;
 /*
  * We can tweak our hardware sector size, but the kernel talks to us
  * in terms of small sectors, always.
@@ -67,6 +73,9 @@ static void sbd_transfer(struct sbd_device *dev, sector_t sector,
 		printk (KERN_NOTICE "sbd: Beyond-end write (%ld %ld)\n", offset, nbytes);
 		return;
 	}
+
+	crypto_cipher_setkey(tfm, crypto_key, keylength);
+
 	if (write)
 		memcpy(dev->data + offset, buffer, nbytes);
 	else
@@ -120,6 +129,12 @@ static struct block_device_operations sbd_ops = {
 };
 
 static int __init sbd_init(void) {
+	
+	//Allocates single block cipher handle
+	tfm = crypto_alloc_cipher("aes", 0, 0);
+	
+	printk("Key is: %s\n", crypto_key);
+
 	/*
 	 * Set up our internal device.
 	 */
@@ -169,6 +184,8 @@ out:
 
 static void __exit sbd_exit(void)
 {
+	//Zeroize and free the single block cipher handle
+	crypto_free_cipher(tfm);
 	del_gendisk(Device.gd);
 	put_disk(Device.gd);
 	unregister_blkdev(major_num, "sbd");
