@@ -82,15 +82,15 @@ static void sbd_transfer(struct sbd_device *dev, sector_t sector,
 	if (write){
 		//memcpy(dev->data + offset, buffer, nbytes);
 		destination = dev->data + offset;
-		src = buffer;
+		source = buffer;
 
 		//encrypt data and store it in the destination
 		//incrementing by crypto blocksize
 		for (i = 0; i < nbytes; i += crypto_cipher_blocksize(tfm))
-		   	crypto_cipher_encrypt_one(tfm, destination + 1, source + 1);
-
+		   	crypto_cipher_encrypt_one(tfm, destination + i, source + i);
+		/*
 		//print encrypted data
-		printk("Write encrypted: \n");
+		printk("\nWrite encrypted: \n");
 		for(i = 0; i < nbytes; i++)
 		   	printk("%u", (unsigned) *(destination+i));
 		
@@ -98,17 +98,17 @@ static void sbd_transfer(struct sbd_device *dev, sector_t sector,
 		printk("\nWrite decrypted: \n");
 		for(i = 0; i < nbytes; i++)
 		   	printk("%u", (unsigned) *(source+i));
-		   	
+		*/ 	
 	}
 	else{
 		//memcpy(buffer, dev->data + offset, nbytes);
 		destination = buffer;
-		src = dev->data + offset;
+		source = dev->data + offset;
 		for (i = 0; i < nbytes; i += crypto_cipher_blocksize(tfm))
-		   	crypto_cipher_decrypt_one(tfm, destination + 1, source + 1);
-
+		   	crypto_cipher_decrypt_one(tfm, destination + i, source + i);
+		/*
 		//print encrypted data
-		printk("Read encrypted: \n");
+		printk("\nRead encrypted: \n");
 		for(i = 0; i < nbytes; i++)
 		   	printk("%u", (unsigned) *(destination+i));
 		
@@ -116,7 +116,8 @@ static void sbd_transfer(struct sbd_device *dev, sector_t sector,
 		printk("\nRead decrypted: \n");
 		for(i = 0; i < nbytes; i++)
 		   	printk("%u", (unsigned) *(source+i));
-	}
+		*/
+		}
 }
 
 static void sbd_request(struct request_queue *q) {
