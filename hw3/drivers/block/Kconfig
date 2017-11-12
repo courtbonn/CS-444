@@ -33,11 +33,6 @@ config BLK_DEV_FD
 	  To compile this driver as a module, choose M here: the
 	  module will be called floppy.
 
-config RAM_D
-	tristate "Ram disk project"
-	---help---
-	  Encrypted ram disk project.
-
 config AMIGA_FLOPPY
 	tristate "Amiga floppy support"
 	depends on AMIGA
