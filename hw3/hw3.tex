@@ -38,6 +38,7 @@
 \maketitle
 
 \begin{abstract}
+   This document details our plan, worklog, and further documentation regarding the encrypted block device project.
 \end{abstract}
 
 \section{Design Plan}
@@ -118,6 +119,13 @@ Initially we had the block device print out each byte that was encrypted/decrpyt
 We learned a lot about block devices in Linux and how they handle IO. We also learned how to use the Crypto API.
 \end{enumerate}
 
+\section{Run Instructions}
+To apply the patch:
+\begin{enumerate}
+   \item cd \$linux\_src/drivers/block
+   \item patch $>$ (dir where this is)/linux.patch
+\end{enumerate}
 
+Then source the environment and start qemu. Then the block device can be run as described above.
 
 \end{document}
