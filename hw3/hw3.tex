@@ -77,6 +77,8 @@ Once in the VM, we were able to run a series of commands that loaded the ramdisk
 
 Now that we were able to successfully run an unencrypted ramdisk, our next step was to begin the encryption section. 
 
+Once the encryption step was done, we were able to check if the encryption was successful. After creating the \textit{file1} file, we can check in the raw device if there's anything that matches the \textit{file1} string with \textit{grep -a 'Hi' /sbd0p1} which should return nothing if it's being encrypted and decrypted correctly. After this we can unmount and remove the module as before.
+
 \section{Version Control Log}
 
 \section{Work Log}
@@ -89,7 +91,7 @@ November 2, 2017 & 7:15pm & Courtney and Isaac & Begin researching Ram Disks \\
 		 & 9:30pm & Isaac & Building and compiling ramd.c \\
 November 3, 2017 & 9:00am & Courtney & Successfully boot VM and loaded the Ramd.c module, made the filesystem, mounted it, verified it worked, unmounted and removed module \\
 November 5, 2017 & 1:30pm & Courtney & Began researching Crypto API, focusing on how to use module parameters for the key \\
-November 8, 2017 & 2:00pm & Isaac & Start implementing crypto functionality
+November 8, 2017 & 2:00pm & Isaac & Start implementing crypto functionality \\
 November 11, 2017 & 5:45pm & Courtney & Began testing crypto code \\
 		  & 7:00pm & Isaac & Running crypto code \\
    		  & 8:45pm & Isaac & Finished crypto code \\
@@ -100,9 +102,20 @@ November 11, 2017 & 5:45pm & Courtney & Began testing crypto code \\
 \section{Write Up}
 \begin{enumerate}
                 \item What do you think the main point of this assignment is? \\
+The main point was to implement a block device in our virtual machine. The block device encrypted when read was called and decrypted when write was called. It replaced the existing RAM disk driver.
                 \item How did you personally approach the problem? Design decisions, algorithm, etc. \\
-                \item How did you ensure your solution was correct? Testing details, for instance.
-                \item What did you learn?
+We started with an block device without encryption and ensured that worked before attempting encryption. When beginning encryption, we looked into the Crypto API for methods we could utilize. Essentially the algorithm is as follows:
+\begin{enumerate}
+   \item Initiate the Crypto API
+   \item Set the cipher key to either the default or the supplied argument
+   \item Encrypt and decrypt one byte at a time, as reads and writes are called
+   \item Free the cipher when finished
+\end{enumerate}
+
+                \item How did you ensure your solution was correct? Testing details, for instance. \\
+Initially we had the block device print out each byte that was encrypted/decrpyted, but it proved to be too much to handle. We decided to create a file in the filesystem, then search for the string in the raw device. If it wasn't found, it means that the string is being encrypted correctly.
+                \item What did you learn? \\
+We learned a lot about block devices in Linux and how they handle IO. We also learned how to use the Crypto API.
 \end{enumerate}
 
 
