@@ -34,7 +34,17 @@ int count(){
 
 //searchers merely examine the list
 void search(){
+	struct node *item = head;
+	while(1){
+		pthread_mutex_lock(&search_mutex);
+		while(item != NULL) {
+			printf("item is %d\n", item->data);
+			item = item->next;
+		}
 
+		pthread_mutex_unlock(&search_mutex);
+		sleep(1);
+	}
 }
 
 //inserters add new items to the end of the list
@@ -42,7 +52,7 @@ void insert(){
 	//new is the element to be inserted
 	struct node *new;
 	while(1){
-	   	pthread_mutex_lock(&insert_mutex_);
+	   	pthread_mutex_lock(&insert_mutex);
 		curr = head;
 
 	   	if(count() < 10){
@@ -66,7 +76,26 @@ void insert(){
 
 //deleters remove items from anywhere in the list
 void delete(){
+	struct node *item, *front, *back;
+	while(1){
+		pthread_mutex_lock(&search_mutex);
+		pthread_mutex_lock(&insert_mutex); 
 
+		//remove the head
+		if(head == NULL) {
+			print("List is empty; Nothing to delete\n");
+			return NULL;
+		} else {
+			front = head;
+			head = head->next;
+			front->next = NULL;
+			if(front == head) 
+				head = NULL;
+			free(front);
+			return head; 
+		}
+
+		
 }
 
 int main(){
