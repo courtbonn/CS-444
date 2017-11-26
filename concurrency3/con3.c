@@ -4,11 +4,15 @@
 #include <pthread.h>
 #include <time.h>
 #include <string.h>
+#include <semaphore.h>
 
 //blocks for when the list is being acted on
 pthread_mutex_t search_mutex;
 pthread_mutex_t delete_mutex;
 pthread_mutex_t insert_mutex;
+
+sem_t delete_insert_sem;
+sem_t delete_search_sem;
 
 //linked list
 //http://www.zentut.com/c-tutorial/c-linked-list/
@@ -16,6 +20,19 @@ struct node{
 	int data;
 	struct node* next;
 } *head;
+
+//print list
+void print_list(){
+	struct node *curr;
+	int i;
+	curr = head;
+	printf("CURRENT LIST: ");
+	while(curr != NULL){
+	   	printf("[%d] ", curr->data);
+	   	curr = curr->next;
+	}
+	printf("\n");
+}
 
 //we'll need a method to check the size of the list
 //insert when list < max size
@@ -32,26 +49,29 @@ int count(){
 }
 
 //searchers merely examine the list
+//multiple searchers are allowed, no lock
 void *searcher(){
-	struct node *item = head;
+	struct node *item;
 	while(1){
-		pthread_mutex_lock(&search_mutex);
+		//wait for delete to finish
+		sem_wait(&delete_search_sem);
+
+		item = head;
 		if (count() == 0){
 		   	printf("SEARCH: list is empty\n");
-			pthread_mutex_unlock(&search_mutex);
+		//	pthread_mutex_unlock(&delete_mutex);
 			sleep(1);
 			break;
-		}
+		} else {
+		printf("SEARCHER: ");
 		while(item != NULL) {
-			printf("SEARCHER: [%d] \n", item->data);
+			printf("[%d] ", item->data);
 			item = item->next;
 		}
-//		printf("\n");
-
-		pthread_mutex_unlock(&search_mutex);
+		printf("\n");
+		}
 		sleep(1);
 	}
-		printf("Inside searcher\n");
 }
 
 //inserters add new items to the end of the list
@@ -59,28 +79,37 @@ void *inserter(){
 	//new is the element to be inserted
 	struct node *new, *curr;
 	while(1){
-	   	pthread_mutex_lock(&insert_mutex);
-		//pthread_mutex_lock(&delete_mutex);
-		curr = head;
-			
+	   	if(count() < 15) {
+		//wait for delete to finish
+	   	sem_wait(&delete_insert_sem);
+		//just one inserter allowed
+	   	//pthread_mutex_lock(&insert_mutex);
+
 		//make node to insert
 		new = (struct node *)malloc(sizeof(struct node));
 		new->data = rand() % 50;
 		new->next = NULL;
 		printf("INSERTER: [%d]\n", new->data);	
-	
-		//find end of list
-		while(curr->next != NULL)
-		   	curr = curr->next;
-		
-		//insert new node
-		curr->next = new;
-	
-		pthread_mutex_unlock(&insert_mutex);
-		//pthread_mutex_unlock(&delete_mutex);
-		sleep(6);
+
+		//somehow there is no list to insert into
+		//init linked list
+		if (head == NULL){
+			head = new;
+			head->next = NULL;
+			printf("INSERTER: new node: [%d]\n", head->data);
+		}else{
+			//find end of list
+			curr = head;
+			while(curr->next != NULL)
+		   		curr = curr->next;
+			//insert new node
+			curr->next = new;
+		}
+		print_list();
+		//pthread_mutex_unlock(&insert_mutex);
+		sleep(1);
+		}
 	} 
-	printf("Inside Inserter\n");
 }
 
 //deleters remove items from anywhere in the list
@@ -89,107 +118,83 @@ void *deleter(){
 	struct node *item, *prev;
 	int i, rand_idx;
 	while(1){
-		pthread_mutex_lock(&search_mutex);
-		pthread_mutex_lock(&insert_mutex); 
-		//pthread_mutex_lock(&delete_mutex);
+	//	pthread_mutex_lock(&search_mutex);
+	//	pthread_mutex_lock(&insert_mutex);
 		item = head;
 		
 		//get a random index within the size of the list
-		if (count() == 0){
+		if (head == NULL){
 		   	printf("DELETER: list is already empty\n");
 			break;
-		}
-		rand_idx = rand() % count();	
+		} else {
+			rand_idx = rand() % count();	
 			
-		printf("DELETER: count=%d rand_idx=%d\n", count(), rand_idx);
-		//set item to the list element
-		for (i = 0; i < rand_idx; i++){
-			prev = item;
-			item = item->next;
-		}
-		//delete first element
-		if (item == head){
-			printf("inside deleting the first element if statement\n"); 
-		   	//empty list
-		   	if (head == NULL)
-			   	break;
-			head = head->next;
-			item->next = NULL;
-			free(item);
-	//		break;
-		}
-		//delete last element
-		else if (item->next == NULL){
-		   	//empty list
-		   	printf("inside deleting the last element if statement\n");
-		  	if (head == NULL)
-			  	break; 
-	//		if (prev != NULL) 
-				prev->next = NULL;
-	//		if (item == head)
-	//			head = NULL;
-			free(item);
-	//		break;
-		}
-		//delete element from middle
-		else{ 
-			printf("inside deleting middle element\n");
-		   	//empty list
-			if (head == NULL)
-			   	break;
-			if (item != NULL){
-				prev->next = item->next;
+			printf("DELETER: count=%d rand_idx=%d\n", count(), rand_idx);
+			//set item to the list element
+			for (i = 0; i < rand_idx; i++){
+				prev = item;
+				item = item->next;
+			}
+			//delete first element
+			if (item == head){
+				head = head->next;
 				item->next = NULL;
 				free(item);
 			}
-	//		break;
+			//delete last element
+			else if (item->next == NULL){
+				prev->next = NULL;
+				free(item);
+				print_list();
+			}
+			//delete element from middle
+			else{ 
+				if (item != NULL){
+					prev->next = item->next;
+					item->next = NULL;
+					free(item);
+				}
+			}
 		}
-		printf("at the end of the while statement\n");
-		pthread_mutex_unlock(&search_mutex);
-		pthread_mutex_unlock(&insert_mutex);
-		//pthread_mutex_unlock(&delete_mutex);
-		sleep(2);
-		
-	}
-	printf("outside while loop\n");
-	//need this to unlock after break
-	pthread_mutex_unlock(&search_mutex);
-	pthread_mutex_unlock(&insert_mutex);
-//	pthread_mutex_unlock(&delete_mutex);
-	sleep(2);	
-	return head; 
+		print_list();
 
-	printf("Inside deleter\n");
+		//this break should escape the loop correctly
+		break;
+                                                
+	}
+	//pthread_mutex_unlock(&search_mutex);
+	//pthread_mutex_unlock(&insert_mutex); 
+
+	//wake up the search and insert if they were waiting
+	sem_post(&delete_insert_sem);
+	sem_post(&delete_search_sem);
+	sleep(1);	
 }
 
 int main(){
 	int i;
 	srand(time(NULL));
 	
+	pthread_mutex_init(&search_mutex, NULL);
+	pthread_mutex_init(&insert_mutex, NULL);
+	pthread_mutex_init(&delete_mutex, NULL);
+
+	sem_init(&delete_insert_sem, 0, 1);
+	sem_init(&delete_search_sem, 0, 1);
+
 	pthread_t searcher_th[3];
 	pthread_t inserter_th[3];
 	pthread_t deleter_th[3];
 
-	//init linked list
-	struct node *new_node;
-	new_node = (struct node *)malloc(sizeof(struct node));
-	new_node->data = rand() % 50;
-	printf("First node: [%d]\n", new_node->data);
-	head = new_node;
-	head->next = NULL;
-	
 	//create threads
-	for(i = 0; i < 3; ++i){
-	 //  	printf("creating searcher %d\n", i);
-		pthread_create(&searcher_th[i], NULL, (void *)searcher, (void *)NULL);
-	//	printf("creating inserter %d\n", i);
+	for(i = 0; i < 3; i++){
 		pthread_create(&inserter_th[i], NULL, (void *)inserter, (void *)NULL);
-	//	printf("creating deleter %d\n", i);
+		pthread_create(&searcher_th[i], NULL, (void *)searcher, (void *)NULL);
 		pthread_create(&deleter_th[i], NULL, (void *)deleter, (void *)NULL);
 	}
 
 	//join threads
-	for(i = 0; i < 3; ++i){
+	for(i = 0; i < 3; i++){
 	   	pthread_join(inserter_th[i], NULL);
 		pthread_join(searcher_th[i], NULL);
 		pthread_join(deleter_th[i], NULL);
