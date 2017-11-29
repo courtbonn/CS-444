@@ -42,6 +42,27 @@
 \end{abstract}
 
 \section{Design Plan}
+Our plan began with researching how the current SLOB layer works within the Linux Kernel. 
+The current algorithm that is used is the first fit.
+This algorithm finds the first page that has sufficient space to fit the current request and allocates that memory for it. 
+
+We want to change this algorithm to the best fit algorithm, which will cycle through the available pages and allocate the page that best fits the request. 
+
+Our first step is to view the current implementation in the \textit{mm/slob.c} file. 
+After some research, we found two websites that offer more explanation: \url{http://classes.engr.oregonstate.edu/eecs/fall2011/cs411/proj02.pdf} and \url{https://courses.engr.illinois.edu/cs423/sp2011/mps/mp4/mp4.pdf}.
+
+The first thing these sources helped us learn was how to enable the SLOB allocator. 
+
+	\begin{enumerate}
+		\item Replace CONFIG\_EMBEDDED to CONFIG\_EMBEDDED=y in the .config file
+		\item Run the command "make menuconfig"
+		\item Go to General Setup - Choose SLAB Allocator and choose SLOB
+	\end{enumerate}
+
+Next, we will create a program to compute the efficiency of both algorithms and compare the fragmentation. 
+To do this, we will use system calls. 
+
+Next we will examine the \textit{slob\_alloc()} and \textit{slob\_page\_alloc()} functions and implement the best fit algorithm within these two functions. 
 
 \section{Work Log}
 \begin{center}
