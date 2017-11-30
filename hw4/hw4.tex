@@ -49,7 +49,8 @@ This algorithm finds the first page that has sufficient space to fit the current
 We want to change this algorithm to the best fit algorithm, which will cycle through the available pages and allocate the page that best fits the request. 
 
 Our first step is to view the current implementation in the \textit{mm/slob.c} file. 
-After some research, we found two websites that offer more explanation: \url{http://classes.engr.oregonstate.edu/eecs/fall2011/cs411/proj02.pdf} and \url{https://courses.engr.illinois.edu/cs423/sp2011/mps/mp4/mp4.pdf}.
+After some research, we found two websites that offer more explanation: \url{http://classes.engr.oregonstate.edu/eecs/fall2011/cs411/proj02.pdf} and 
+\url{https://courses.engr.illinois.edu/cs423/sp2011/mps/mp4/mp4.pdf}.
 
 The first thing these sources helped us learn was how to enable the SLOB allocator. 
 
@@ -69,6 +70,9 @@ Next we will examine the \textit{slob\_alloc()} and \textit{slob\_page\_alloc()}
 \begin{tabular}{p{3cm}p{1cm}p{1cm}p{10cm} }
  Date  & Time & Person & Event \\ \hline
 November 28, 2017 & 6:30pm & Courtney & Started HW4 LaTeX file \\
+		  & 6:50pm & Courtney & Begin researching SLOB, first fit, and best fit algorithms \\
+		  & 8:15pm & Courtney & Began working on design plan \\
+		  & 8:15pm & Isaac & Reconfigured the config file to point to SLOB allocator \\
 \end{tabular}
 \end{center}
 
