@@ -72,7 +72,7 @@
 
 #include <linux/atomic.h>
 
-#include <linux/syscalls.h>
+#include <linux/syscall.h>
 #include <linux/linkage.h>
 
 #include "slab.h"
@@ -273,9 +273,9 @@ static void *slob_page_alloc(struct page *sp, size_t size, int align)
  */
 static void *slob_alloc(size_t size, gfp_t gfp, int align, int node)
 {
-	struct page *sp, *next_page;
+	struct page *sp;
 	struct list_head *prev;
-	struct list_head *slob_list, *temp_list;
+	struct list_head *slob_list, *slob_list2;
 	slob_t *b = NULL;
 	unsigned long flags;
 
@@ -300,33 +300,34 @@ static void *slob_alloc(size_t size, gfp_t gfp, int align, int node)
 		/* Enough room on this page? */
 		if (sp->units < SLOB_UNITS(size))
 			continue;
-	
-		/*best fit here*/
-		//check if next page is null
-		if (next_page == NULL)
-		   	next_page = sp;
-		
-		//find the smallest page that is available
-		if (next_page->units > sp->units)
-		   	next_page = sp;
 
-		//try to allocate on that page
-		if (next_page != NULL)
-		   	b = slob_page_alloc(next_page, size, align);
+		/* Attempt to alloc */
+		prev = sp->lru.prev;
+		b = slob_page_alloc(sp, size, align);
+		if (!b)
+			continue;
 
-		//get free_units by looping through to find free space
-		temp_list = &free_slob_small;
-		list_for_each_entry(sp, temp_list, lru){
-			free_units += sp->units;
-		}
-		temp_list = &free_slob_medium;
-		list_for_each_entry(sp, temp_list, lru){
-			free_units += sp->units;
-		}
-		temp_list = &free_slob_large;
-		list_for_each_entry(sp, temp_list, lru){
+		/* Improve fragment distribution and reduce our average
+		 * search time by starting our next search here. (see
+		 * Knuth vol 1, sec 2.5, pg 449) */
+		if (prev != slob_list->prev &&
+				slob_list->next != prev->next)
+			list_move_tail(slob_list, prev->next);
+
+		slob_list2 = &free_slob_small;
+		list_for_each_entry(sp, slob_list2, lru){
 		   	free_units += sp->units;
 		}
+		slob_list2 = &free_slob_medium;
+		list_for_each_entry(sp, slob_list2, lru){
+		   	free_units += sp->units;
+		}
+		slob_list2 = &free_slob_large;
+		list_for_each_entry(sp, slob_list2, lru){
+		   	free_units += sp->units;
+		}
+
+		break;
 	}
 	spin_unlock_irqrestore(&slob_lock, flags);
 
@@ -347,7 +348,7 @@ static void *slob_alloc(size_t size, gfp_t gfp, int align, int node)
 		b = slob_page_alloc(sp, size, align);
 		BUG_ON(!b);
 		spin_unlock_irqrestore(&slob_lock, flags);
-		
+
 		//a new page was allocated
 		slob_page_count++;
 	}
@@ -387,7 +388,6 @@ static void slob_free(void *block, int size)
 
 		//a page was just freed
 		slob_page_count--;
-
 		return;
 	}
 
@@ -657,7 +657,7 @@ struct kmem_cache kmem_cache_boot = {
 };
 
 asmlinkage long sys_slob_used(void){
-   	long used_units = SLOB_UNITS(PAGE_SIZE) * slob_page_count;
+	long used_units = SLOB_UNITS(PAGE_SIZE) * slob_page_count;
 	return used_units;
 }
 
