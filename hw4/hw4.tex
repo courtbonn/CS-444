@@ -73,6 +73,14 @@ November 28, 2017 & 6:30pm & Courtney & Started HW4 LaTeX file \\
 		  & 6:50pm & Courtney & Begin researching SLOB, first fit, and best fit algorithms \\
 		  & 8:15pm & Courtney & Began working on design plan \\
 		  & 8:15pm & Isaac & Reconfigured the config file to point to SLOB allocator \\
+November 29, 2017 & 5:30pm & Isaac & Started working on system calls program \\
+		  & 6:00pm & Isaac & Began working on best fit algorithm \\
+		  & 7:36pm & Courtney & Working on write up portion\\
+		  & 9:45pm & Courtney & Adding system calls to original slob.c to test fragmentation \\
+		  & 10:00pm & Isaac and Courtney & Attempting to build kernel, system freezing, possible server overload? \\
+November 30, 2017 & 4:00pm & Isaac & Try to fix system freeze \\
+   		  & 5:30pm & Isaac & Program fixed, begin generating patch \\
+   		  & 5:45pm & Isaac and Courtney & Finishing writeup and generating submission files \\
 \end{tabular}
 \end{center}
 
@@ -83,11 +91,37 @@ November 28, 2017 & 6:30pm & Courtney & Started HW4 LaTeX file \\
 \section{Write Up}
 \begin{enumerate}
                 \item What do you think the main point of this assignment is? \\
-                \item How did you personally approach the problem? Design decisions, algorithm, etc. \\
+The main point of this assignment was to learn how memory is allocated in the kernel. Specifically how memory is allocated using the SLOB allocator. The other point was to learn how the first fit algorithm worked and then learn how to transform that into the best fit algorithm. Additionally, just continuing to learn how to program in the kernel is an overlying theme to all of our projects. 
+
+		 \item How did you personally approach the problem? Design decisions, algorithm, etc. \\
+We first approached the problem by researching how the current algorithm, first fit, worked in the SLOB allocator. Once we were comfortable with that, we wanted to focus on the program for testing fragmentation using system calls. After testing and using the system calls, we began editing the allocation functions in slob.c to match the best fit algorithm. 
 
                 \item How did you ensure your solution was correct? Testing details, for instance. \\
-                \item What did you learn? \\
+To test our solution we have a test C program that is copied into the VM using scp. 
+When you run the test program, it calls the two system calls for checking the used SLOB system call and the free SLOB system call. 
+We will run the test program for both the first fit original slob.c file as well as our new best fit slob.c file and then compare the results.
+If our algorithm works correctly, we expect to see results that are quite a bit slower due to it looking for the best fit. 
+Additionally, if the VM starts and our slob.c compiles with no errors, then it's confirmed that the alogrithm is working correctly.   
+               
+		\item What did you learn? \\
+The main thing we learned was how memory allocation works in the Linux Kernel. 
+We learned to work with system calls and the SLOB memory allocator. 
+Additionally, we learned what the first fit and best fit algorithms were in detail. 
+
 		\item How should the TA test your patch? \\
+To apply the patch and then start the VM, follow the below instructions. 
+
+	\begin{enumerate}
+		\item cd into the linux source root directory
+		\item patch -p3 < (directory where this patch is)/linux.patch
+		\item Source the environment file 
+		\item Run the qemu command
+	\end{enumerate} 
+To run our slob\_test.c file, copy it into the vm using scp. 
+Then compile the file with the following command: \textit{gcc slob\_test.c -lrt -o slob\_test}.
+Then run the program with \textit{./slob\_test}.
+ 
+
 \end{enumerate}
 
 
