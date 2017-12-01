@@ -49,7 +49,7 @@ This algorithm finds the first page that has sufficient space to fit the current
 We want to change this algorithm to the best fit algorithm, which will cycle through the available pages and allocate the page that best fits the request. 
 
 Our first step is to view the current implementation in the \textit{mm/slob.c} file. 
-After some research, we found two websites that offer more explanation: \url{http://classes.engr.oregonstate.edu/eecs/fall2011/cs411/proj02.pdf} and 
+After some research, we found two websites that offer more explanation: \url{http://classes.engr.oregonstate.edu/eecs/fall2011/cs411/proj02.pdf} and \\ 
 \url{https://courses.engr.illinois.edu/cs423/sp2011/mps/mp4/mp4.pdf}.
 
 The first thing these sources helped us learn was how to enable the SLOB allocator. 
@@ -67,7 +67,7 @@ Next we will examine the \textit{slob\_alloc()} and \textit{slob\_page\_alloc()}
 
 \section{Work Log}
 \begin{center}
-\begin{tabular}{p{3cm}p{1cm}p{1cm}p{10cm} }
+\begin{tabular}{p{3cm}p{1cm}p{2cm}p{10cm} }
  Date  & Time & Person & Event \\ \hline
 November 28, 2017 & 6:30pm & Courtney & Started HW4 LaTeX file \\
 		  & 6:50pm & Courtney & Begin researching SLOB, first fit, and best fit algorithms \\
@@ -86,6 +86,19 @@ November 30, 2017 & 4:00pm & Isaac & Try to fix system freeze \\
 
 \section{Git Log}
 \begin{tabular}{p{2cm} p{2cm} p{10cm}}\textbf{Detail} & \textbf{Author} & \textbf{Description}\\\hline
+\href{https://github.com/courtbonn/CS-444/commit/1119e9b481cfd36f7ae9b0f153a0a0a330178535}{1119e9b} & Courtney Bonn & base files for project 4 write up\\\hline
+\href{https://github.com/courtbonn/CS-444/commit/d1d9245aaebb666dfc4e453694cb1b1829de1066}{d1d9245} & Courtney Bonn & Finished design plan\\\hline
+\href{https://github.com/courtbonn/CS-444/commit/00ebbd4bc12fcca0d6ef75dc21d413f1ec019b72}{00ebbd4} & Isaac Chan & add initial version of syscalls, best fit, fragmentation test\\\hline
+\href{https://github.com/courtbonn/CS-444/commit/81abc55e1dbec16151f75bbe1eea365782afaff9}{81abc55} & Isaac Chan & add first fit version with fragmentation syscalls and changes to best fit\\\hline
+\href{https://github.com/courtbonn/CS-444/commit/7660ea92753305aa055aa774d0017cabb2d89781}{7660ea9} & Isaac Chan & final ff and bf slobs\\\hline
+\href{https://github.com/courtbonn/CS-444/commit/4ff02f6f5af2c6a9a15710183e4e707a637da6a2}{4ff02f6} & Isaac Chan & add old slob for patch gen\\\hline
+\href{https://github.com/courtbonn/CS-444/commit/42f4086efd0365782a8be2b2373c98ff8152f349}{42f4086} & Isaac Chan & add new slob for patch gen\\\hline
+\href{https://github.com/courtbonn/CS-444/commit/0487caef163bc59e81c98488793ea0532da27887}{0487cae} & Isaac Chan & remove old/new structures\\\hline
+\href{https://github.com/courtbonn/CS-444/commit/57450982a0ac61bcb86ce4ad15f6a294ae15ac7e}{5745098} & Isaac Chan & add new dir for patch gen\\\hline
+\href{https://github.com/courtbonn/CS-444/commit/bc040b179b3dc288a3c1aca104957ebd85623814}{bc040b1} & Isaac Chan & add old dir for patch gen\\\hline
+\href{https://github.com/courtbonn/CS-444/commit/35b24d7cf140fdb7527782205e566db8ded5a03e}{35b24d7} & Isaac Chan & replace old with new\\\hline
+\href{https://github.com/courtbonn/CS-444/commit/0c6df2f77ffdbc2452623ffcb7d39d0be15d9cfe}{0c6df2f} & Isaac Chan & add patch\\\hline
+\href{https://github.com/courtbonn/CS-444/commit/ac829f024c093694b00bde3c321f1b02681d4ca0}{ac829f0} & Courtney Bonn & finished write up\\\hline                   
 \end{tabular}
 
 \section{Write Up}
@@ -113,7 +126,7 @@ To apply the patch and then start the VM, follow the below instructions.
 
 	\begin{enumerate}
 		\item cd into the linux source root directory
-		\item patch -p3 < (directory where this patch is)/linux.patch
+		\item patch -p3 \textless (directory where this patch is)/linux.patch
 		\item Source the environment file 
 		\item Run the qemu command
 	\end{enumerate} 
