@@ -649,13 +649,6 @@ int __kmem_cache_shrink(struct kmem_cache *d)
 	return 0;
 }
 
-struct kmem_cache kmem_cache_boot = {
-	.name = "kmem_cache",
-	.size = sizeof(struct kmem_cache),
-	.flags = SLAB_PANIC,
-	.align = ARCH_KMALLOC_MINALIGN,
-};
-
 asmlinkage long sys_slob_used(void){
    	long used_units = SLOB_UNITS(PAGE_SIZE) * slob_page_count;
 	return used_units;
@@ -664,6 +657,13 @@ asmlinkage long sys_slob_used(void){
 asmlinkage long sys_slob_free(void){
 	return free_units;
 }
+
+struct kmem_cache kmem_cache_boot = {
+	.name = "kmem_cache",
+	.size = sizeof(struct kmem_cache),
+	.flags = SLAB_PANIC,
+	.align = ARCH_KMALLOC_MINALIGN,
+};
 
 void __init kmem_cache_init(void)
 {
