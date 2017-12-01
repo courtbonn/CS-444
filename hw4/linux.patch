@@ -1,0 +1,142 @@
+diff --git a/hw4/old/arch/x86/syscalls/syscall_32.tbl b/hw4/old/arch/x86/syscalls/syscall_32.tbl
+index b3560ec..e01d014 100644
+--- a/hw4/old/arch/x86/syscalls/syscall_32.tbl
++++ b/hw4/old/arch/x86/syscalls/syscall_32.tbl
+@@ -365,3 +365,5 @@
+ 356	i386	memfd_create		sys_memfd_create
+ 357	i386	bpf			sys_bpf
+ 358	i386	execveat		sys_execveat			stub32_execveat
++359	i386	slob_used		sys_slob_used
++360	i386	slob_free		sys_slob_free
+diff --git a/hw4/old/include/linux/syscalls.h b/hw4/old/include/linux/syscalls.h
+index 85893d7..fc40601 100644
+--- a/hw4/old/include/linux/syscalls.h
++++ b/hw4/old/include/linux/syscalls.h
+@@ -882,4 +882,6 @@ asmlinkage long sys_execveat(int dfd, const char __user *filename,
+ 			const char __user *const __user *argv,
+ 			const char __user *const __user *envp, int flags);
+ 
++asmlinkage long sys_slob_used(void);
++asmlinkage long sys_slob_free(void);
+ #endif
+diff --git a/hw4/old/mm/slob.c b/hw4/old/mm/slob.c
+index 96a8620..40be6a3 100644
+--- a/hw4/old/mm/slob.c
++++ b/hw4/old/mm/slob.c
+@@ -72,6 +72,9 @@
+ 
+ #include <linux/atomic.h>
+ 
++#include <linux/syscalls.h>
++#include <linux/linkage.h>
++
+ #include "slab.h"
+ /*
+  * slob_block has a field 'units', which indicates size of block if +ve,
+@@ -87,6 +90,9 @@ typedef s16 slobidx_t;
+ typedef s32 slobidx_t;
+ #endif
+ 
++unsigned long slob_page_count = 0;
++unsigned long free_units = 0;
++
+ struct slob_block {
+ 	slobidx_t units;
+ };
+@@ -267,9 +273,9 @@ static void *slob_page_alloc(struct page *sp, size_t size, int align)
+  */
+ static void *slob_alloc(size_t size, gfp_t gfp, int align, int node)
+ {
+-	struct page *sp;
++	struct page *sp, *next_page;
+ 	struct list_head *prev;
+-	struct list_head *slob_list;
++	struct list_head *slob_list, *temp_list;
+ 	slob_t *b = NULL;
+ 	unsigned long flags;
+ 
+@@ -294,20 +300,33 @@ static void *slob_alloc(size_t size, gfp_t gfp, int align, int node)
+ 		/* Enough room on this page? */
+ 		if (sp->units < SLOB_UNITS(size))
+ 			continue;
+-
+-		/* Attempt to alloc */
+-		prev = sp->lru.prev;
+-		b = slob_page_alloc(sp, size, align);
+-		if (!b)
+-			continue;
+-
+-		/* Improve fragment distribution and reduce our average
+-		 * search time by starting our next search here. (see
+-		 * Knuth vol 1, sec 2.5, pg 449) */
+-		if (prev != slob_list->prev &&
+-				slob_list->next != prev->next)
+-			list_move_tail(slob_list, prev->next);
+-		break;
++	
++		/*best fit here*/
++		//check if next page is null
++		if (next_page == NULL)
++		   	next_page = sp;
++		
++		//find the smallest page that is available
++		if (next_page->units > sp->units)
++		   	next_page = sp;
++
++		//try to allocate on that page
++		if (next_page != NULL)
++		   	b = slob_page_alloc(next_page, size, align);
++
++		//get free_units by looping through to find free space
++		temp_list = &free_slob_small;
++		list_for_each_entry(sp, temp_list, lru){
++			free_units += sp->units;
++		}
++		temp_list = &free_slob_medium;
++		list_for_each_entry(sp, temp_list, lru){
++			free_units += sp->units;
++		}
++		temp_list = &free_slob_large;
++		list_for_each_entry(sp, temp_list, lru){
++		   	free_units += sp->units;
++		}
+ 	}
+ 	spin_unlock_irqrestore(&slob_lock, flags);
+ 
+@@ -328,6 +347,9 @@ static void *slob_alloc(size_t size, gfp_t gfp, int align, int node)
+ 		b = slob_page_alloc(sp, size, align);
+ 		BUG_ON(!b);
+ 		spin_unlock_irqrestore(&slob_lock, flags);
++		
++		//a new page was allocated
++		slob_page_count++;
+ 	}
+ 	if (unlikely((gfp & __GFP_ZERO) && b))
+ 		memset(b, 0, size);
+@@ -362,6 +384,10 @@ static void slob_free(void *block, int size)
+ 		__ClearPageSlab(sp);
+ 		page_mapcount_reset(sp);
+ 		slob_free_pages(b, 0);
++
++		//a page was just freed
++		slob_page_count--;
++
+ 		return;
+ 	}
+ 
+@@ -623,6 +649,15 @@ int __kmem_cache_shrink(struct kmem_cache *d)
+ 	return 0;
+ }
+ 
++asmlinkage long sys_slob_used(void){
++   	long used_units = SLOB_UNITS(PAGE_SIZE) * slob_page_count;
++	return used_units;
++}
++
++asmlinkage long sys_slob_free(void){
++	return free_units;
++}
++
+ struct kmem_cache kmem_cache_boot = {
+ 	.name = "kmem_cache",
+ 	.size = sizeof(struct kmem_cache),
